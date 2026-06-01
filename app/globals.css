@@ -97,3 +97,528 @@
 html {
   color-scheme: dark light;
 }
+
+/* ============================================================
+   Colour Memory Game — ported from the standalone index.html
+   ============================================================ */
+:root {
+  --bg: #0a0a0a;
+  --card-bg: #141414;
+  --text: #ffffff;
+  --text-muted: #737373;
+  --cmg-primary: #ffffff;
+  --cmg-border: #262626;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* Landing Page */
+#landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.landing-content {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.cmg h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 48px;
+}
+
+.form-group {
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.cmg label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+}
+
+.cmg input[type="text"] {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--cmg-border);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.cmg input[type="text"]:focus {
+  border-color: var(--text-muted);
+}
+
+.cmg input[type="text"]::placeholder {
+  color: var(--text-muted);
+}
+
+.mode-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.mode-btn {
+  padding: 16px;
+  border: 1px solid var(--cmg-border);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.mode-btn:hover {
+  border-color: var(--text-muted);
+}
+
+.mode-btn.active {
+  border-color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mode-btn .mode-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: block;
+}
+
+.mode-btn .mode-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.cmg .btn {
+  width: 100%;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  background: var(--text);
+  color: var(--bg);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cmg .btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.cmg .btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.cmg .btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--cmg-border);
+}
+
+.cmg .btn-secondary:hover:not(:disabled) {
+  border-color: var(--text-muted);
+  opacity: 1;
+}
+
+/* Game Screens */
+#game {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+}
+
+.quit-btn {
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quit-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.round-indicator {
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+/* Memorize Phase */
+.memorize-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.color-fullscreen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 24px 24px;
+  min-height: 100vh;
+}
+
+.memorize-text {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.countdown-display {
+  font-size: 4rem;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+/* Guess Phase */
+.guess-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.guess-color-preview {
+  flex: 1;
+  min-height: 50vh;
+}
+
+.guess-controls {
+  background: var(--bg);
+  padding: 32px 24px;
+  border-radius: 24px 24px 0 0;
+}
+
+.slider-group {
+  margin-bottom: 24px;
+}
+
+.slider-label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.slider-track {
+  position: relative;
+  height: 48px;
+  border-radius: 12px;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.slider-track::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+.slider-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+.hue-track {
+  background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+}
+
+/* Round Result Screen */
+#result-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.color-comparison {
+  flex: 1;
+  display: flex;
+  min-height: 60vh;
+}
+
+.color-half {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 24px;
+  padding-bottom: 40px;
+}
+
+.color-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+
+.color-hex {
+  font-family: monospace;
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+.result-bottom {
+  background: var(--bg);
+  padding: 32px 24px;
+  text-align: center;
+  border-radius: 24px 24px 0 0;
+  margin-top: -24px;
+  position: relative;
+}
+
+.result-rating {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.result-accuracy {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+/* Final Results */
+#results {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.final-card {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.final-title {
+  font-size: 1rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.final-name {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 48px;
+}
+
+.final-score-label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.final-score {
+  font-size: 5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.final-max {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 48px;
+}
+
+.final-accuracy {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 48px;
+}
+
+.final-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Challenge Section */
+.challenge-section {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--cmg-border);
+}
+
+.challenge-prompt {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.challenge-subtext {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.share-buttons .btn {
+  flex: 1;
+}
+
+.cmg .btn-primary {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: #ffffff;
+}
+
+.cmg .btn-primary:hover:not(:disabled) {
+  opacity: 0.95;
+}
+
+.copied-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: var(--bg);
+  padding: 12px 24px;
+  border-radius: 100px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 1000;
+}
+
+.copied-toast.show {
+  opacity: 1;
+}
+
+/* Challenge Page */
+#challenge {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.challenge-content {
+  width: 100%;
+  max-width: 400px;
+}
+
+.challenge-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.challenge-intro {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.challenge-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.challenge-score {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.challenge-max {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.animate-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@media (max-width: 480px) {
+  .cmg h1 { font-size: 1.75rem; }
+  .final-score { font-size: 4rem; }
+  .challenge-score { font-size: 3rem; }
+}
