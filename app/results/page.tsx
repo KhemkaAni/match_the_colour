@@ -14,7 +14,7 @@ import { formatOrdinal } from "@/lib/utils";
 
 export default function ResultsPage() {
   const router = useRouter();
-  const { getGameResult, resetGame, playerName } = useGameStore();
+  const { getGameResult, resetGame } = useGameStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
