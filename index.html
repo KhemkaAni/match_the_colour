@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How Well Do You Know Your Colours?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0a0a0a;
+      --card-bg: #141414;
+      --text: #ffffff;
+      --text-muted: #737373;
+      --primary: #ffffff;
+      --border: #262626;
+      --radius: 16px;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Landing Page */
+    #landing {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .landing-content {
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 48px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-muted);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: transparent;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--text-muted);
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text-muted);
+    }
+
+    .mode-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .mode-btn {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: transparent;
+      color: var(--text);
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .mode-btn:hover {
+      border-color: var(--text-muted);
+    }
+
+    .mode-btn.active {
+      border-color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .mode-btn .mode-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: block;
+    }
+
+    .mode-btn .mode-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 16px 24px;
+      border: none;
+      border-radius: 12px;
+      background: var(--text);
+      color: var(--bg);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+
+    .btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      border-color: var(--text-muted);
+      opacity: 1;
+    }
+
+    /* Game Screens */
+    #game {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .game-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .quit-btn {
+      padding: 10px 20px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 100px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quit-btn:hover {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .round-indicator {
+      padding: 10px 20px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 100px;
+      font-size: 0.875rem;
+      color: var(--text);
+    }
+
+    /* Memorize Phase */
+    .memorize-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .color-fullscreen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 24px 24px;
+    }
+
+    .memorize-text {
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .countdown-display {
+      font-size: 4rem;
+      font-weight: 700;
+      opacity: 0.9;
+    }
+
+    /* Guess Phase */
+    .guess-screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+    }
+
+    .guess-color-preview {
+      flex: 1;
+      min-height: 50vh;
+    }
+
+    .guess-controls {
+      background: var(--bg);
+      padding: 32px 24px;
+      border-radius: 24px 24px 0 0;
+    }
+
+    .slider-group {
+      margin-bottom: 24px;
+    }
+
+    .slider-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .slider-track {
+      position: relative;
+      height: 48px;
+      border-radius: 12px;
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    .slider-track::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      pointer-events: none;
+    }
+
+    .slider-thumb {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+    }
+
+    .hue-track {
+      background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+    }
+
+    /* Result Screen */
+    #result-screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .color-comparison {
+      flex: 1;
+      display: flex;
+      min-height: 60vh;
+    }
+
+    .color-half {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 24px;
+      padding-bottom: 40px;
+    }
+
+    .color-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.7;
+      margin-bottom: 8px;
+    }
+
+    .color-hex {
+      font-family: monospace;
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    .result-bottom {
+      background: var(--bg);
+      padding: 32px 24px;
+      text-align: center;
+      border-radius: 24px 24px 0 0;
+      margin-top: -24px;
+      position: relative;
+    }
+
+    .result-rating {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .result-accuracy {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    /* Final Results */
+    #results {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .final-card {
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .final-title {
+      font-size: 1rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .final-name {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 48px;
+    }
+
+    .final-score-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .final-score {
+      font-size: 5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .final-max {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 48px;
+    }
+
+    .final-accuracy {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 48px;
+    }
+
+    .final-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Challenge Section */
+    .challenge-section {
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .challenge-prompt {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .challenge-subtext {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .share-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .share-buttons .btn {
+      flex: 1;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      opacity: 0.95;
+    }
+
+    .copied-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: var(--bg);
+      padding: 12px 24px;
+      border-radius: 100px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 1000;
+    }
+
+    .copied-toast.show {
+      opacity: 1;
+    }
+
+    /* Challenge Page */
+    #challenge {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .challenge-content {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .challenge-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .challenge-intro {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .challenge-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .challenge-score {
+      font-size: 4rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .challenge-max {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-in {
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      h1 { font-size: 1.75rem; }
+      .final-score { font-size: 4rem; }
+      .challenge-score { font-size: 3rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Landing Page -->
+  <div id="landing" class="animate-in">
+    <div class="landing-content">
+      <h1>How well do you know your colours?</h1>
+      <p class="subtitle">Memorize colours, then recreate them from memory.</p>
+
+      <div class="form-group">
+        <label for="playerName">Your Name</label>
+        <input type="text" id="playerName" placeholder="Enter your name" maxlength="20" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label>Difficulty</label>
+        <div class="mode-selector">
+          <button class="mode-btn active" data-mode="regular">
+            <span class="mode-name">Regular</span>
+            <span class="mode-desc">6 seconds</span>
+          </button>
+          <button class="mode-btn" data-mode="hard">
+            <span class="mode-name">Hard</span>
+            <span class="mode-desc">3 seconds</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn" id="startBtn" disabled>Start</button>
+    </div>
+  </div>
+
+  <!-- Game Page -->
+  <div id="game" class="hidden">
+    <div class="game-header">
+      <button class="quit-btn" id="quitBtn">Quit</button>
+      <span class="round-indicator"><span id="currentRound">1</span> of 5</span>
+    </div>
+    <div id="gameContent"></div>
+  </div>
+
+  <!-- Results Page -->
+  <div id="results" class="hidden">
+    <div class="final-card animate-in" id="finalCard"></div>
+  </div>
+
+  <!-- Challenge Page -->
+  <div id="challenge" class="hidden">
+    <div class="challenge-content animate-in" id="challengeContent"></div>
+  </div>
+
+  <script>
+    // Color Utilities
+    const ColorUtils = {
+      hslToRgb(h, s, l) {
+        s /= 100;
+        l /= 100;
+        const c = (1 - Math.abs(2 * l - 1)) * s;
+        const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+        const m = l - c / 2;
+        let r = 0, g = 0, b = 0;
+
+        if (h < 60) { r = c; g = x; }
+        else if (h < 120) { r = x; g = c; }
+        else if (h < 180) { g = c; b = x; }
+        else if (h < 240) { g = x; b = c; }
+        else if (h < 300) { r = x; b = c; }
+        else { r = c; b = x; }
+
+        return {
+          r: Math.round((r + m) * 255),
+          g: Math.round((g + m) * 255),
+          b: Math.round((b + m) * 255)
+        };
+      },
+
+      rgbToHex(r, g, b) {
+        const toHex = n => Math.round(Math.max(0, Math.min(255, n))).toString(16).padStart(2, '0');
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+      },
+
+      hslToHex(h, s, l) {
+        const { r, g, b } = this.hslToRgb(h, s, l);
+        return this.rgbToHex(r, g, b);
+      },
+
+      hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : { r: 0, g: 0, b: 0 };
+      },
+
+      rgbToLab(rgb) {
+        let r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255;
+
+        r = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+        g = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+        b = b > 0.04045 ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+
+        r *= 100; g *= 100; b *= 100;
+
+        const x = r * 0.4124564 + g * 0.3575761 + b * 0.1804375;
+        const y = r * 0.2126729 + g * 0.7151522 + b * 0.0721750;
+        const z = r * 0.0193339 + g * 0.1191920 + b * 0.9503041;
+
+        const refX = 95.047, refY = 100.000, refZ = 108.883;
+        let xr = x / refX, yr = y / refY, zr = z / refZ;
+
+        const epsilon = 0.008856, kappa = 903.3;
+        xr = xr > epsilon ? Math.pow(xr, 1/3) : (kappa * xr + 16) / 116;
+        yr = yr > epsilon ? Math.pow(yr, 1/3) : (kappa * yr + 16) / 116;
+        zr = zr > epsilon ? Math.pow(zr, 1/3) : (kappa * zr + 16) / 116;
+
+        return { l: 116 * yr - 16, a: 500 * (xr - yr), b: 200 * (yr - zr) };
+      },
+
+      deltaE(hex1, hex2) {
+        const lab1 = this.rgbToLab(this.hexToRgb(hex1));
+        const lab2 = this.rgbToLab(this.hexToRgb(hex2));
+        return Math.sqrt(
+          Math.pow(lab1.l - lab2.l, 2) +
+          Math.pow(lab1.a - lab2.a, 2) +
+          Math.pow(lab1.b - lab2.b, 2)
+        );
+      },
+
+      generateRandomColor() {
+        const h = Math.floor(Math.random() * 360);
+        const s = 50 + Math.floor(Math.random() * 40);
+        const l = 35 + Math.floor(Math.random() * 35);
+        return this.hslToHex(h, s, l);
+      },
+
+      getTextColor(hex) {
+        const rgb = this.hexToRgb(hex);
+        const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+        return brightness > 128 ? '#000000' : '#ffffff';
+      }
+    };
+
+    // Scoring
+    const Scoring = {
+      calculate(targetHex, guessHex) {
+        const delta = ColorUtils.deltaE(targetHex, guessHex);
+        const accuracy = Math.max(0, 100 - Math.min(delta, 100));
+        return {
+          accuracy: Math.round(accuracy),
+          score: Math.round(accuracy)
+        };
+      },
+
+      getRating(accuracy) {
+        if (accuracy >= 95) return "Perfect";
+        if (accuracy >= 85) return "Excellent";
+        if (accuracy >= 70) return "Great";
+        if (accuracy >= 55) return "Good";
+        if (accuracy >= 40) return "Close";
+        return "Keep trying";
+      }
+    };
+
+    // Game State
+    const GameState = {
+      playerName: '',
+      mode: 'regular',
+      currentRound: 1,
+      rounds: [],
+      targetColor: '',
+
+      reset() {
+        this.currentRound = 1;
+        this.rounds = [];
+        this.targetColor = '';
+      },
+
+      getTotalScore() {
+        return this.rounds.reduce((sum, r) => sum + r.score, 0);
+      },
+
+      getAverageAccuracy() {
+        if (this.rounds.length === 0) return 0;
+        return Math.round(this.rounds.reduce((sum, r) => sum + r.accuracy, 0) / this.rounds.length);
+      }
+    };
+
+    // DOM Elements
+    const $ = id => document.getElementById(id);
+
+    // Initialize
+    function init() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('name') && params.has('score') && params.has('mode')) {
+        showChallengePage(params);
+        return;
+      }
+
+      const savedName = localStorage.getItem('playerName');
+      if (savedName) {
+        $('playerName').value = savedName;
+        $('startBtn').disabled = false;
+      }
+
+      $('playerName').addEventListener('input', () => {
+        $('startBtn').disabled = !$('playerName').value.trim();
+      });
+
+      $('playerName').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && $('playerName').value.trim()) startGame();
+      });
+
+      $('startBtn').addEventListener('click', startGame);
+      $('quitBtn').addEventListener('click', quitGame);
+
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          GameState.mode = btn.dataset.mode;
+        });
+      });
+    }
+
+    function showPage(page) {
+      ['landing', 'game', 'results', 'challenge'].forEach(p => {
+        $(p).classList.add('hidden');
+      });
+      $(page).classList.remove('hidden');
+    }
+
+    function startGame() {
+      GameState.playerName = $('playerName').value.trim();
+      localStorage.setItem('playerName', GameState.playerName);
+      GameState.reset();
+      updateRoundDisplay();
+      showPage('game');
+      startMemorizePhase();
+    }
+
+    function quitGame() {
+      showPage('landing');
+    }
+
+    function updateRoundDisplay() {
+      $('currentRound').textContent = GameState.currentRound;
+    }
+
+    // Memorize Phase
+    function startMemorizePhase() {
+      GameState.targetColor = ColorUtils.generateRandomColor();
+      const displayTime = GameState.mode === 'hard' ? 3 : 6;
+      const textColor = ColorUtils.getTextColor(GameState.targetColor);
+
+      $('gameContent').innerHTML = `
+        <div class="memorize-screen">
+          <div class="color-fullscreen" style="background-color: ${GameState.targetColor}; color: ${textColor};">
+            <p class="memorize-text">Memorize this colour</p>
+            <p class="countdown-display" id="countdown">${displayTime}</p>
+          </div>
+        </div>
+      `;
+
+      let timeLeft = displayTime;
+      const timer = setInterval(() => {
+        timeLeft--;
+        $('countdown').textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          startGuessPhase();
+        }
+      }, 1000);
+    }
+
+    // Guess Phase
+    function startGuessPhase() {
+      let hue = 0, intensity = 50; // intensity combines saturation and lightness
+
+      function getColor() {
+        const sat = 50 + (intensity / 2);
+        const light = 30 + (intensity * 0.4);
+        return ColorUtils.hslToHex(hue, sat, light);
+      }
+
+      function updatePreview() {
+        const color = getColor();
+        $('guessPreview').style.backgroundColor = color;
+      }
+
+      $('gameContent').innerHTML = `
+        <div class="guess-screen">
+          <div class="guess-color-preview" id="guessPreview" style="background-color: #ffffff;"></div>
+          <div class="guess-controls">
+            <div class="slider-group">
+              <span class="slider-label">Hue</span>
+              <div class="slider-track hue-track" id="hueTrack">
+                <div class="slider-thumb" id="hueThumb" style="left: 0%"></div>
+              </div>
+            </div>
+            <div class="slider-group">
+              <span class="slider-label">Intensity</span>
+              <div class="slider-track" id="intensityTrack" style="background: linear-gradient(to right, #333, hsl(0, 70%, 50%), #fff);">
+                <div class="slider-thumb" id="intensityThumb" style="left: 50%"></div>
+              </div>
+            </div>
+            <button class="btn" id="submitGuess">Submit</button>
+          </div>
+        </div>
+      `;
+
+      function setupSlider(trackId, thumbId, min, max, initial, onChange) {
+        const track = $(trackId);
+        const thumb = $(thumbId);
+        let isDragging = false;
+
+        function update(clientX) {
+          const rect = track.getBoundingClientRect();
+          const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+          const value = Math.round(min + pct * (max - min));
+          thumb.style.left = `${pct * 100}%`;
+          onChange(value);
+          updatePreview();
+          updateIntensityGradient();
+        }
+
+        track.addEventListener('mousedown', (e) => { isDragging = true; update(e.clientX); });
+        track.addEventListener('touchstart', (e) => { isDragging = true; update(e.touches[0].clientX); });
+        document.addEventListener('mousemove', (e) => { if (isDragging) update(e.clientX); });
+        document.addEventListener('touchmove', (e) => { if (isDragging) update(e.touches[0].clientX); });
+        document.addEventListener('mouseup', () => isDragging = false);
+        document.addEventListener('touchend', () => isDragging = false);
+      }
+
+      function updateIntensityGradient() {
+        $('intensityTrack').style.background = `linear-gradient(to right, #1a1a1a, hsl(${hue}, 70%, 50%), #ffffff)`;
+      }
+
+      setupSlider('hueTrack', 'hueThumb', 0, 359, 0, v => hue = v);
+      setupSlider('intensityTrack', 'intensityThumb', 0, 100, 50, v => intensity = v);
+
+      $('submitGuess').addEventListener('click', () => {
+        const guessedColor = getColor();
+        showRoundResult(guessedColor);
+      });
+    }
+
+    // Round Result
+    function showRoundResult(guessedColor) {
+      const result = Scoring.calculate(GameState.targetColor, guessedColor);
+      GameState.rounds.push({
+        targetColor: GameState.targetColor,
+        guessedColor,
+        ...result
+      });
+
+      const targetTextColor = ColorUtils.getTextColor(GameState.targetColor);
+      const guessTextColor = ColorUtils.getTextColor(guessedColor);
+      const rating = Scoring.getRating(result.accuracy);
+      const isLastRound = GameState.currentRound >= 5;
+
+      $('gameContent').innerHTML = `
+        <div id="result-screen">
+          <div class="color-comparison">
+            <div class="color-half" style="background-color: ${GameState.targetColor}; color: ${targetTextColor};">
+              <span class="color-label">Target</span>
+              <span class="color-hex">${GameState.targetColor.toUpperCase()}</span>
+            </div>
+            <div class="color-half" style="background-color: ${guessedColor}; color: ${guessTextColor};">
+              <span class="color-label">Yours</span>
+              <span class="color-hex">${guessedColor.toUpperCase()}</span>
+            </div>
+          </div>
+          <div class="result-bottom">
+            <p class="result-rating">${rating}</p>
+            <p class="result-accuracy">${result.accuracy}%</p>
+            <button class="btn" id="nextRound">Proceed</button>
+          </div>
+        </div>
+      `;
+
+      $('nextRound').addEventListener('click', () => {
+        if (isLastRound) {
+          showFinalResults();
+        } else {
+          GameState.currentRound++;
+          updateRoundDisplay();
+          startMemorizePhase();
+        }
+      });
+    }
+
+    // Final Results
+    function showFinalResults() {
+      showPage('results');
+
+      const totalScore = GameState.getTotalScore();
+      const avgAccuracy = GameState.getAverageAccuracy();
+
+      $('finalCard').innerHTML = `
+        <p class="final-title">Results</p>
+        <p class="final-name">${GameState.playerName}</p>
+
+        <p class="final-score-label">Total Score</p>
+        <p class="final-score">${totalScore}</p>
+        <p class="final-max">out of 500</p>
+
+        <p class="final-accuracy">${avgAccuracy}% average accuracy</p>
+
+        <button class="btn" id="playAgain">Play Again</button>
+
+        <div class="challenge-section">
+          <p class="challenge-prompt">Think your friends can beat you?</p>
+          <p class="challenge-subtext">Send them a challenge and find out</p>
+          <div class="share-buttons">
+            <button class="btn btn-primary" id="shareBtn">Challenge a Friend</button>
+            <button class="btn btn-secondary" id="copyBtn">Copy Link</button>
+          </div>
+        </div>
+      `;
+
+      // Add toast element
+      if (!$('copiedToast')) {
+        const toast = document.createElement('div');
+        toast.id = 'copiedToast';
+        toast.className = 'copied-toast';
+        toast.textContent = 'Link copied to clipboard';
+        document.body.appendChild(toast);
+      }
+
+      $('playAgain').addEventListener('click', () => {
+        GameState.reset();
+        showPage('landing');
+      });
+
+      const challengeUrl = `${window.location.origin}${window.location.pathname}?name=${encodeURIComponent(GameState.playerName)}&score=${totalScore}&mode=${GameState.mode}`;
+
+      $('shareBtn').addEventListener('click', async () => {
+        const shareData = {
+          title: 'Colour Memory Challenge',
+          text: `I scored ${totalScore}/500 on the Colour Memory game. Think you can beat me?`,
+          url: challengeUrl
+        };
+
+        if (navigator.share) {
+          try { await navigator.share(shareData); }
+          catch (e) { if (e.name !== 'AbortError') copyToClipboard(challengeUrl); }
+        } else {
+          copyToClipboard(challengeUrl);
+        }
+      });
+
+      $('copyBtn').addEventListener('click', () => {
+        copyToClipboard(challengeUrl);
+      });
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = $('copiedToast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      });
+    }
+
+    // Challenge Page
+    function showChallengePage(params) {
+      const name = decodeURIComponent(params.get('name'));
+      const score = parseInt(params.get('score'));
+      const mode = params.get('mode');
+
+      if (isNaN(score) || !['regular', 'hard'].includes(mode)) {
+        showPage('landing');
+        return;
+      }
+
+      showPage('challenge');
+      GameState.mode = mode;
+
+      $('challengeContent').innerHTML = `
+        <div class="challenge-header">
+          <p class="challenge-intro">Can you beat</p>
+          <p class="challenge-name">${name}</p>
+          <p class="challenge-score">${score}</p>
+          <p class="challenge-max">out of 500</p>
+        </div>
+
+        <div class="form-group">
+          <label for="challengeName">Your Name</label>
+          <input type="text" id="challengeName" placeholder="Enter your name" maxlength="20" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label>Difficulty</label>
+          <div class="mode-selector">
+            <button class="mode-btn ${mode === 'regular' ? 'active' : ''}" data-mode="regular">
+              <span class="mode-name">Regular</span>
+              <span class="mode-desc">6 seconds</span>
+            </button>
+            <button class="mode-btn ${mode === 'hard' ? 'active' : ''}" data-mode="hard">
+              <span class="mode-name">Hard</span>
+              <span class="mode-desc">3 seconds</span>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn" id="acceptChallenge" disabled>Accept Challenge</button>
+      `;
+
+      const savedName = localStorage.getItem('playerName');
+      if (savedName) {
+        $('challengeName').value = savedName;
+        $('acceptChallenge').disabled = false;
+      }
+
+      $('challengeName').addEventListener('input', () => {
+        $('acceptChallenge').disabled = !$('challengeName').value.trim();
+      });
+
+      $('challengeName').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && $('challengeName').value.trim()) {
+          $('acceptChallenge').click();
+        }
+      });
+
+      $('challengeContent').querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          $('challengeContent').querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          GameState.mode = btn.dataset.mode;
+        });
+      });
+
+      $('acceptChallenge').addEventListener('click', () => {
+        GameState.playerName = $('challengeName').value.trim();
+        localStorage.setItem('playerName', GameState.playerName);
+        GameState.reset();
+        window.history.replaceState({}, '', window.location.pathname);
+        updateRoundDisplay();
+        showPage('game');
+        startMemorizePhase();
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
