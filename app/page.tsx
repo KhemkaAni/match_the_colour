@@ -145,6 +145,47 @@ function getRating(accuracy: number): string {
 }
 
 /* ------------------------------------------------------------------ */
+/* Challenge link signing                                              */
+/*                                                                     */
+/* The score has to travel inside the share link (there is no server   */
+/* to store it). To stop someone from simply editing the number in the */
+/* URL, we attach a signature derived from name + score + mode and a   */
+/* secret. If any of those are changed, the signature no longer        */
+/* matches and the link is treated as invalid.                         */
+/* ------------------------------------------------------------------ */
+
+const CHALLENGE_SECRET = "cmg-2026-x7Qp9rL3vTnA";
+
+// cyrb53 — small, fast, non-cryptographic string hash.
+function cyrb53(str: string, seed = 0): number {
+  let h1 = 0xdeadbeef ^ seed;
+  let h2 = 0x41c6ce57 ^ seed;
+  for (let i = 0; i < str.length; i++) {
+    const ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+  h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+  h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+}
+
+function signChallenge(name: string, score: number, mode: string): string {
+  return cyrb53(`${name}|${score}|${mode}|${CHALLENGE_SECRET}`).toString(36);
+}
+
+function isValidChallengeSignature(
+  name: string,
+  score: number,
+  mode: string,
+  sig: string
+): boolean {
+  return signChallenge(name, score, mode) === sig;
+}
+
+/* ------------------------------------------------------------------ */
 /* Types                                                               */
 /* ------------------------------------------------------------------ */
 
@@ -248,11 +289,21 @@ export default function Home() {
   useEffect(() => {
     setMounted(true);
     const params = new URLSearchParams(window.location.search);
-    if (params.has("name") && params.has("score") && params.has("mode")) {
+    if (
+      params.has("name") &&
+      params.has("score") &&
+      params.has("mode") &&
+      params.has("sig")
+    ) {
       const name = decodeURIComponent(params.get("name") ?? "");
       const score = parseInt(params.get("score") ?? "", 10);
       const m = params.get("mode");
-      if (!Number.isNaN(score) && (m === "regular" || m === "hard")) {
+      const sig = params.get("sig") ?? "";
+      if (
+        !Number.isNaN(score) &&
+        (m === "regular" || m === "hard") &&
+        isValidChallengeSignature(name, score, m, sig)
+      ) {
         setChallenge({ name, score, mode: m });
         setMode(m);
         setScreen("challenge");
@@ -356,7 +407,11 @@ export default function Home() {
     mounted && typeof window !== "undefined"
       ? `${window.location.origin}${window.location.pathname}?name=${encodeURIComponent(
           playerName
-        )}&score=${totalScore}&mode=${mode}`
+        )}&score=${totalScore}&mode=${mode}&sig=${signChallenge(
+          playerName,
+          totalScore,
+          mode
+        )}`
       : "";
 
   const copyToClipboard = (text: string) => {

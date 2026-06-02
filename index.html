@@ -708,6 +708,32 @@
       }
     };
 
+    // Challenge link signing.
+    // The score must travel inside the share link (there's no server to
+    // store it), so we attach a signature derived from name + score + mode
+    // and a secret. Editing the score in the URL breaks the signature and
+    // the link is rejected as invalid.
+    const CHALLENGE_SECRET = "cmg-2026-x7Qp9rL3vTnA";
+
+    function cyrb53(str, seed = 0) {
+      let h1 = 0xdeadbeef ^ seed;
+      let h2 = 0x41c6ce57 ^ seed;
+      for (let i = 0; i < str.length; i++) {
+        const ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+      }
+      h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+      h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+      h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+      h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+      return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+    }
+
+    function signChallenge(name, score, mode) {
+      return cyrb53(`${name}|${score}|${mode}|${CHALLENGE_SECRET}`).toString(36);
+    }
+
     // Game State
     const GameState = {
       playerName: '',
@@ -738,7 +764,7 @@
     // Initialize
     function init() {
       const params = new URLSearchParams(window.location.search);
-      if (params.has('name') && params.has('score') && params.has('mode')) {
+      if (params.has('name') && params.has('score') && params.has('mode') && params.has('sig')) {
         showChallengePage(params);
         return;
       }
@@ -979,7 +1005,7 @@
         showPage('landing');
       });
 
-      const challengeUrl = `${window.location.origin}${window.location.pathname}?name=${encodeURIComponent(GameState.playerName)}&score=${totalScore}&mode=${GameState.mode}`;
+      const challengeUrl = `${window.location.origin}${window.location.pathname}?name=${encodeURIComponent(GameState.playerName)}&score=${totalScore}&mode=${GameState.mode}&sig=${signChallenge(GameState.playerName, totalScore, GameState.mode)}`;
 
       $('shareBtn').addEventListener('click', async () => {
         const shareData = {
@@ -1014,8 +1040,10 @@
       const name = decodeURIComponent(params.get('name'));
       const score = parseInt(params.get('score'));
       const mode = params.get('mode');
+      const sig = params.get('sig');
 
-      if (isNaN(score) || !['regular', 'hard'].includes(mode)) {
+      if (isNaN(score) || !['regular', 'hard'].includes(mode) ||
+          signChallenge(name, score, mode) !== sig) {
         showPage('landing');
         return;
       }
